@@ -6,29 +6,28 @@ import java.util.Map;
 
 /** Base exception for all COSMOS utility errors. */
 public abstract class JsonUtilityException extends RuntimeException {
-    private final String errorCode;
-    private final Map<String, Object> context = new HashMap<>();
+  private final String errorCode;
+  private final Map<String, Object> context = new HashMap<>();
 
-    protected JsonUtilityException(String message, String errorCode) {
-        super(message);
-        this.errorCode = errorCode;
-    }
+  protected JsonUtilityException(String message, String errorCode) {
+    super(message);
+    this.errorCode = errorCode;
+  }
 
-    protected JsonUtilityException(String message, String errorCode, Throwable cause) {
-        super(message, cause);
-        this.errorCode = errorCode;
-    }
+  protected JsonUtilityException(String message, String errorCode, Throwable cause) {
+    super(message, cause);
+    this.errorCode = errorCode;
+  }
 
-    public String getErrorCode() {
-        return errorCode;
-    }
+  public String getErrorCode() {
+    return errorCode;
+  }
 
-    public Map<String, Object> getContext() {
-        return Collections.unmodifiableMap(context);
-    }
+  public Map<String, Object> getContext() {
+    return Collections.unmodifiableMap(context);
+  }
 
-    protected void addContext(String key, Object value) {
-        this.context.put(key, value);
-    }
+  protected void addContext(String key, Object value) {
+    this.context.put(key, value);
+  }
 }
-

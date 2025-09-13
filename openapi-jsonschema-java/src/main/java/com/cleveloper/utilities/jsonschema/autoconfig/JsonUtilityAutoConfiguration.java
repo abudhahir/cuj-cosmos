@@ -6,16 +6,13 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Minimal Spring Boot auto-configuration for COSMOS utilities.
- */
+/** Minimal Spring Boot auto-configuration for COSMOS utilities. */
 @AutoConfiguration
 public class JsonUtilityAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean(ValidationEngine.class)
-    public ValidationEngine validationEngine() {
-        return new DefaultValidationEngine();
-    }
+  @Bean
+  @ConditionalOnMissingBean(ValidationEngine.class)
+  public ValidationEngine validationEngine() {
+    return new DefaultValidationEngine();
+  }
 }
-

@@ -20,6 +20,13 @@
     </properties>
 
     <dependencies>
+        <!-- Spring Boot test utilities for auto-configuration testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring.boot.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- Optional Spring Boot auto-configuration support -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
