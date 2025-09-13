@@ -141,6 +141,33 @@ secrets.properties
 *.orig
 *.backup
 
+# Claude Code and AI Development Tools
+.claude/
+*.claude
+claude-*
+.cursor/
+.cursorrules
+.copilot/
+.github/copilot-instructions.md
+
+# AI Agent Files
+agents/
+.agents/
+agent-*.log
+agent-*.json
+mcp-*
+.mcp/
+
+# Claude Code Session Files
+.claude-session/
+claude-session-*
+.claude-cache/
+
+# AI Generated Files (temporary)
+ai-generated/
+*.ai-temp
+*.claude-temp
+
 # Node.js (if frontend components are added later)
 node_modules/
 npm-debug.log*
