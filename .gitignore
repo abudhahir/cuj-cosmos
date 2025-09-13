@@ -145,6 +145,7 @@ secrets.properties
 .claude/
 *.claude
 claude-*
+CLAUDE.md
 .cursor/
 .cursorrules
 .copilot/
