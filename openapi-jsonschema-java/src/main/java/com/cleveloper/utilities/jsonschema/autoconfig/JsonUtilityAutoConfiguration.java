@@ -5,6 +5,7 @@ import com.cleveloper.utilities.jsonschema.SchemaGenerator;
 import com.cleveloper.utilities.jsonschema.ValidationEngine;
 import com.cleveloper.utilities.jsonschema.cache.CaffeineSpecCache;
 import com.cleveloper.utilities.jsonschema.cache.SpecCache;
+import com.cleveloper.utilities.jsonschema.config.OpenApiSchemaProperties;
 import com.cleveloper.utilities.jsonschema.config.OpenApiSpecsProperties;
 import com.cleveloper.utilities.jsonschema.generation.VicToolsSchemaGenerator;
 import com.cleveloper.utilities.jsonschema.openapi.DefaultOpenApiSchemaService;
@@ -19,7 +20,7 @@ import org.springframework.core.io.ResourceLoader;
 
 /** Minimal Spring Boot auto-configuration for COSMOS utilities. */
 @AutoConfiguration
-@EnableConfigurationProperties(OpenApiSpecsProperties.class)
+@EnableConfigurationProperties({OpenApiSpecsProperties.class, OpenApiSchemaProperties.class})
 public class JsonUtilityAutoConfiguration {
 
   @Bean
@@ -60,7 +61,10 @@ public class JsonUtilityAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean(OpenApiSchemaService.class)
-  public OpenApiSchemaService openApiSchemaService(OpenApiSpecRegistry registry) {
-    return new DefaultOpenApiSchemaService(registry);
+  public OpenApiSchemaService openApiSchemaService(
+      OpenApiSpecRegistry registry, OpenApiSchemaProperties schemaProps) {
+    String uri = schemaProps != null ? schemaProps.getUri() : null;
+    String idPrefix = schemaProps != null ? schemaProps.getIdPrefix() : null;
+    return new DefaultOpenApiSchemaService(registry, null, null, uri, idPrefix);
   }
 }
