@@ -1,0 +1,148 @@
+# COSMOS (Comprehensive OpenAPI Schema Management Operations Suite) - .gitignore
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IDE Files
+## IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+## Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+## NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+## VS Code
+.vscode/
+
+# Spring Boot
+*.log
+*.log.*
+application-*.properties
+!application.properties
+!application-*.properties.example
+
+# Testing
+*.tmp
+*.bak
+test-output/
+testng-reports/
+.testcontainers.properties
+
+# JaCoCo
+*.exec
+
+# SpotBugs
+spotbugsXml.xml
+
+# Performance Testing
+benchmarks.jar
+*.hprof
+*.prof
+
+# Docker
+Dockerfile.local
+docker-compose.override.yml
+
+# Local Development
+.env
+.env.local
+.env.*.local
+
+# Cache and Temporary Files
+.cache/
+tmp/
+temp/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Generated Documentation
+javadoc/
+site/
+
+# Schema Files (exclude generated/temporary schemas)
+schemas/generated/
+schemas/temp/
+*.schema.tmp
+
+# Redis/Cache dumps
+dump.rdb
+*.aof
+
+# JVM Crash Logs
+hs_err_*.log
+crash.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Security
+*.key
+*.pem
+*.p12
+*.jks
+secrets.properties
+
+# Backup files
+*.orig
+*.backup
+
+# Node.js (if frontend components are added later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
