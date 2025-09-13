@@ -20,12 +20,36 @@ import java.util.Objects;
 public class OpenApiToJsonSchemaConverter {
 
   private final ObjectMapper mapper = new ObjectMapper();
+  private final boolean useDefsRef;
+
+  /** Creates a converter that references components via $ref: #/$defs/Name. */
+  public OpenApiToJsonSchemaConverter() {
+    this(true);
+  }
+
+  /**
+   * @param useDefsRef when true, component references are emitted as $ref: #/$defs/Name; when
+   *     false, component schemas are dereferenced and inlined.
+   */
+  public OpenApiToJsonSchemaConverter(boolean useDefsRef) {
+    this.useDefsRef = useDefsRef;
+  }
 
   /** Convert the provided OpenAPI Schema object to a JSON Schema node. */
   public JsonNode convert(OpenAPI openApi, Schema<?> component) {
     if (component == null) return mapper.createObjectNode();
-    Schema<?> schema = deref(openApi, component);
-    return convertSchema(openApi, schema);
+    String ref = component.get$ref();
+    if (ref != null && !ref.isBlank()) {
+      if (useDefsRef) {
+        ObjectNode refNode = mapper.createObjectNode();
+        String name = ref.substring(ref.lastIndexOf('/') + 1);
+        refNode.put("$ref", "#/$defs/" + name);
+        return refNode;
+      } else {
+        return convertSchema(openApi, deref(openApi, component));
+      }
+    }
+    return convertSchema(openApi, component);
   }
 
   private ObjectNode convertSchema(OpenAPI openApi, Schema<?> schema) {
@@ -98,6 +122,7 @@ public class OpenApiToJsonSchemaConverter {
 
     // Constraints (basic)
     applyNumericStringConstraints(node, schema);
+    applyArrayObjectConstraints(node, schema);
 
     return node;
   }
@@ -112,8 +137,55 @@ public class OpenApiToJsonSchemaConverter {
 
     BigDecimal minimum = schema.getMinimum();
     BigDecimal maximum = schema.getMaximum();
-    if (minimum != null) node.put("minimum", minimum);
-    if (maximum != null) node.put("maximum", maximum);
+    Boolean exclusiveMinFlag = schema.getExclusiveMinimum();
+    Boolean exclusiveMaxFlag = schema.getExclusiveMaximum();
+    BigDecimal multipleOf = schema.getMultipleOf();
+
+    if (exclusiveMinFlag != null && exclusiveMinFlag && minimum != null) {
+      node.put("exclusiveMinimum", minimum);
+    } else if (minimum != null) {
+      node.put("minimum", minimum);
+    }
+    if (exclusiveMaxFlag != null && exclusiveMaxFlag && maximum != null) {
+      node.put("exclusiveMaximum", maximum);
+    } else if (maximum != null) {
+      node.put("maximum", maximum);
+    }
+    if (multipleOf != null) node.put("multipleOf", multipleOf);
+  }
+
+  private void applyArrayObjectConstraints(ObjectNode node, Schema<?> schema) {
+    // Array
+    Integer minItems = schema.getMinItems();
+    Integer maxItems = schema.getMaxItems();
+    Boolean uniqueItems = schema.getUniqueItems();
+    if (minItems != null) node.put("minItems", minItems);
+    if (maxItems != null) node.put("maxItems", maxItems);
+    if (uniqueItems != null) node.put("uniqueItems", uniqueItems);
+
+    // Object
+    Integer minProps = schema.getMinProperties();
+    Integer maxProps = schema.getMaxProperties();
+    if (minProps != null) node.put("minProperties", minProps);
+    if (maxProps != null) node.put("maxProperties", maxProps);
+
+    Object addl = schema.getAdditionalProperties();
+    if (addl != null) {
+      if (addl instanceof Boolean) {
+        node.put("additionalProperties", (Boolean) addl);
+      } else if (addl instanceof Schema) {
+        node.set("additionalProperties", convert(null, (Schema<?>) addl));
+      }
+    }
+
+    // Metadata
+    if (schema.getDescription() != null) node.put("description", schema.getDescription());
+    if (schema.getTitle() != null) node.put("title", schema.getTitle());
+    if (schema.getDefault() != null) node.set("default", mapper.valueToTree(schema.getDefault()));
+    if (schema.getExample() != null) {
+      ArrayNode examples = node.putArray("examples");
+      examples.addPOJO(schema.getExample());
+    }
   }
 
   private Schema<?> deref(OpenAPI openApi, Schema<?> schema) {

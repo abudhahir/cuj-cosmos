@@ -29,16 +29,14 @@ class OpenApiToJsonSchemaConverterTest {
   }
 
   @Test
-  void shouldDereferenceRefSchemas() throws Exception {
+  void shouldMapRefSchemasToDefs() throws Exception {
     String yaml = Files.readString(Path.of("src/test/resources/specs/petstore-min.yml"));
     OpenAPI api = new OpenApiParser().parse(yaml);
     Schema<?> petRef = api.getComponents().getSchemas().get("PetRef");
 
     OpenApiToJsonSchemaConverter conv = new OpenApiToJsonSchemaConverter();
     JsonNode node = conv.convert(api, petRef);
-    assertThat(node.get("type").asText()).isEqualTo("object");
-    assertThat(node.get("properties").has("id")).isTrue();
-    assertThat(node.get("properties").has("name")).isTrue();
+    assertThat(node.get("$ref").asText()).isEqualTo("#/$defs/Pet");
   }
 
   @Test
@@ -69,8 +67,8 @@ class OpenApiToJsonSchemaConverterTest {
     JsonNode node = conv.convert(api, comp);
     assertThat(node.has("allOf")).isTrue();
     assertThat(node.get("allOf").isArray()).isTrue();
-    assertThat(node.get("allOf").get(0).get("properties").has("a")).isTrue();
-    assertThat(node.get("allOf").get(1).get("properties").has("b")).isTrue();
+    assertThat(node.get("allOf").get(0).get("$ref").asText()).isEqualTo("#/$defs/PartA");
+    assertThat(node.get("allOf").get(1).get("$ref").asText()).isEqualTo("#/$defs/PartB");
   }
 
   @Test
@@ -101,5 +99,37 @@ class OpenApiToJsonSchemaConverterTest {
     JsonNode bag = conv.convert(api, api.getComponents().getSchemas().get("Bag"));
     assertThat(bag.get("type").asText()).isEqualTo("array");
     assertThat(bag.get("items").get("type").asText()).isEqualTo("string");
+
+    // NumbersExclusive: exclusiveMinimum/exclusiveMaximum mapping to numeric values
+    JsonNode exclusive =
+        conv.convert(api, api.getComponents().getSchemas().get("NumbersExclusive"));
+    assertThat(exclusive.has("exclusiveMinimum")).isTrue();
+    assertThat(exclusive.has("exclusiveMaximum")).isTrue();
+    assertThat(exclusive.has("minimum")).isFalse();
+    assertThat(exclusive.has("maximum")).isFalse();
+
+    // AdditionalProperties false
+    JsonNode addlFalse = conv.convert(api, api.getComponents().getSchemas().get("AdditionalProps"));
+    assertThat(addlFalse.get("additionalProperties").asBoolean()).isFalse();
+
+    // AdditionalProperties schema
+    JsonNode addlSchema =
+        conv.convert(api, api.getComponents().getSchemas().get("AdditionalSchema"));
+    assertThat(addlSchema.get("additionalProperties").get("type").asText()).isEqualTo("string");
+
+    // Array constraints
+    JsonNode arrayC = conv.convert(api, api.getComponents().getSchemas().get("ArrayConstraints"));
+    assertThat(arrayC.get("minItems").asInt()).isEqualTo(1);
+    assertThat(arrayC.get("maxItems").asInt()).isEqualTo(3);
+    assertThat(arrayC.get("uniqueItems").asBoolean()).isTrue();
+
+    // Object property count constraints
+    JsonNode objC = conv.convert(api, api.getComponents().getSchemas().get("ObjectPropsCount"));
+    assertThat(objC.get("minProperties").asInt()).isEqualTo(1);
+    assertThat(objC.get("maxProperties").asInt()).isEqualTo(2);
+
+    // multipleOf
+    JsonNode mult = conv.convert(api, api.getComponents().getSchemas().get("MultipleOf"));
+    assertThat(mult.get("multipleOf").asInt()).isEqualTo(5);
   }
 }

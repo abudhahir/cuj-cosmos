@@ -15,16 +15,24 @@ public class DefaultOpenApiSchemaService implements OpenApiSchemaService {
   private final OpenApiSpecRegistry registry;
   private final OpenApiToJsonSchemaConverter converter;
   private final ObjectMapper mapper;
+  private final String schemaUri;
+  private final String idPrefix;
 
   public DefaultOpenApiSchemaService(
-      OpenApiSpecRegistry registry, OpenApiToJsonSchemaConverter converter, ObjectMapper mapper) {
+      OpenApiSpecRegistry registry,
+      OpenApiToJsonSchemaConverter converter,
+      ObjectMapper mapper,
+      String schemaUri,
+      String idPrefix) {
     this.registry = registry;
-    this.converter = converter;
+    this.converter = converter == null ? new OpenApiToJsonSchemaConverter(true) : converter;
     this.mapper = mapper == null ? new ObjectMapper() : mapper;
+    this.schemaUri = (schemaUri == null || schemaUri.isBlank()) ? SCHEMA_DRAFT_2020_12 : schemaUri;
+    this.idPrefix = (idPrefix == null || idPrefix.isBlank()) ? "urn:cosmos:schema:" : idPrefix;
   }
 
   public DefaultOpenApiSchemaService(OpenApiSpecRegistry registry) {
-    this(registry, new OpenApiToJsonSchemaConverter(), new ObjectMapper());
+    this(registry, new OpenApiToJsonSchemaConverter(true), new ObjectMapper(), null, null);
   }
 
   @Override
@@ -34,8 +42,8 @@ public class DefaultOpenApiSchemaService implements OpenApiSchemaService {
       throw new IllegalArgumentException("componentName must not be empty");
 
     ObjectNode doc = mapper.createObjectNode();
-    doc.put("$schema", SCHEMA_DRAFT_2020_12);
-    doc.put("$id", "urn:cosmos:schema:" + componentName);
+    doc.put("$schema", schemaUri);
+    doc.put("$id", idPrefix + componentName);
 
     // Root schema
     Schema<?> rootSchema = openApi.getComponents().getSchemas().get(componentName);
