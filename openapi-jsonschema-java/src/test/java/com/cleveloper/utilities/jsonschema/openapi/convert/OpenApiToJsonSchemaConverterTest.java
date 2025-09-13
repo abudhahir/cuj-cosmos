@@ -132,4 +132,20 @@ class OpenApiToJsonSchemaConverterTest {
     JsonNode mult = conv.convert(api, api.getComponents().getSchemas().get("MultipleOf"));
     assertThat(mult.get("multipleOf").asInt()).isEqualTo(5);
   }
+
+  @Test
+  void shouldMapNotAndAnnotations() throws Exception {
+    String yaml = Files.readString(Path.of("src/test/resources/specs/advanced.yml"));
+    OpenAPI api = new OpenApiParser().parse(yaml);
+    OpenApiToJsonSchemaConverter conv = new OpenApiToJsonSchemaConverter();
+
+    JsonNode notNode = conv.convert(api, api.getComponents().getSchemas().get("NotString"));
+    assertThat(notNode.has("not")).isTrue();
+    assertThat(notNode.get("not").get("type").asText()).isEqualTo("string");
+
+    JsonNode ann = conv.convert(api, api.getComponents().getSchemas().get("Annotated"));
+    assertThat(ann.get("readOnly").asBoolean()).isTrue();
+    assertThat(ann.get("writeOnly").asBoolean()).isFalse();
+    assertThat(ann.get("deprecated").asBoolean()).isTrue();
+  }
 }

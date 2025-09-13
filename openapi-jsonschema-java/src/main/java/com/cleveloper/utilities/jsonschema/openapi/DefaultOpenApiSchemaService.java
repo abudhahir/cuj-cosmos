@@ -49,15 +49,27 @@ public class DefaultOpenApiSchemaService implements OpenApiSchemaService {
     Schema<?> rootSchema = openApi.getComponents().getSchemas().get(componentName);
     if (rootSchema == null)
       throw new IllegalArgumentException("Component not found: " + componentName);
-    doc.setAll((ObjectNode) converter.convert(openApi, rootSchema));
+    ObjectNode rootNode = (ObjectNode) converter.convert(openApi, rootSchema);
+    doc.setAll(rootNode);
 
-    // $defs: include all components as named definitions (best-effort initial approach)
+    // $defs: include only referenced component schemas (closure)
     ObjectNode defs = doc.putObject("$defs");
     Map<String, Schema> components = openApi.getComponents().getSchemas();
-    for (Map.Entry<String, Schema> entry : components.entrySet()) {
-      String name = entry.getKey();
-      Schema<?> s = entry.getValue();
-      defs.set(name, converter.convert(openApi, s));
+
+    java.util.Set<String> toProcess = new java.util.LinkedHashSet<>();
+    java.util.Set<String> processed = new java.util.HashSet<>();
+
+    toProcess.addAll(collectDefRefs(rootNode));
+
+    while (!toProcess.isEmpty()) {
+      String name = toProcess.iterator().next();
+      toProcess.remove(name);
+      if (!processed.add(name)) continue;
+      Schema<?> s = components.get(name);
+      if (s == null) continue;
+      ObjectNode defNode = (ObjectNode) converter.convert(openApi, s);
+      defs.set(name, defNode);
+      toProcess.addAll(collectDefRefs(defNode));
     }
 
     try {
@@ -65,6 +77,29 @@ public class DefaultOpenApiSchemaService implements OpenApiSchemaService {
     } catch (Exception e) {
       throw new IllegalStateException("Failed to serialize schema document", e);
     }
+  }
+
+  private java.util.Set<String> collectDefRefs(com.fasterxml.jackson.databind.JsonNode node) {
+    java.util.Set<String> names = new java.util.LinkedHashSet<>();
+    if (node == null) return names;
+    if (node.isObject()) {
+      node.fields()
+          .forEachRemaining(
+              e -> {
+                if ("$ref".equals(e.getKey()) && e.getValue().isTextual()) {
+                  String v = e.getValue().asText();
+                  String prefix = "#/$defs/";
+                  if (v.startsWith(prefix)) {
+                    names.add(v.substring(prefix.length()));
+                  }
+                } else {
+                  names.addAll(collectDefRefs(e.getValue()));
+                }
+              });
+    } else if (node.isArray()) {
+      node.forEach(child -> names.addAll(collectDefRefs(child)));
+    }
+    return names;
   }
 
   @Override

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
-class OpenApiSchemaServiceTest {
+class OpenApiSchemaServiceDefsOptimizationTest {
 
   private final ApplicationContextRunner runner =
       new ApplicationContextRunner()
@@ -19,19 +19,17 @@ class OpenApiSchemaServiceTest {
               "cosmos.openapi.specs[0].location=classpath:specs/petstore-min.yml");
 
   @Test
-  void generateFromRegistryShouldProduceDocumentWithDefs() {
+  void shouldOnlyIncludeReferencedComponentsInDefs() {
     runner.run(
         ctx -> {
           OpenApiSchemaService svc = ctx.getBean(OpenApiSchemaService.class);
           String json = svc.generateFromRegistry("pet", "Pet");
           ObjectMapper mapper = new ObjectMapper();
           JsonNode root = mapper.readTree(json);
-          assertThat(root.get("$schema").asText()).contains("draft/2020-12");
-          assertThat(root.get("$id").asText()).contains("Pet");
-          // Only referenced components should appear under $defs; root component is not duplicated
-          assertThat(root.get("$defs").has("Pet")).isFalse();
+          // Pet root should be object with properties, and $defs should not contain PetRef (unused)
           assertThat(root.get("type").asText()).isEqualTo("object");
-          assertThat(root.get("properties").has("name")).isTrue();
+          assertThat(root.get("$defs").has("Pet")).isFalse(); // root inlines, not in $defs
+          assertThat(root.get("$defs").has("PetRef")).isFalse();
         });
   }
 }

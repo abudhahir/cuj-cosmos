@@ -124,6 +124,16 @@ public class OpenApiToJsonSchemaConverter {
     applyNumericStringConstraints(node, schema);
     applyArrayObjectConstraints(node, schema);
 
+    // not
+    if (schema.getNot() != null) {
+      node.set("not", convert(openApi, schema.getNot()));
+    }
+
+    // readOnly/writeOnly/Deprecated (annotations)
+    if (schema.getReadOnly() != null) node.put("readOnly", schema.getReadOnly());
+    if (schema.getWriteOnly() != null) node.put("writeOnly", schema.getWriteOnly());
+    if (schema.getDeprecated() != null) node.put("deprecated", schema.getDeprecated());
+
     return node;
   }
 
