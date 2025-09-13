@@ -13,10 +13,11 @@ Source: See implementation detail in `docs/implementation-plan.md` (Phase 1) and
 - [ ] Establish branch protection rules (admin action outside repo code).
 
 ## Sprint 2: OpenAPI Processing Foundation
-- [ ] Integrate OpenAPI parser (swagger-parser) and basic configuration.
-- [ ] Implement schema extraction from components with $ref resolution.
-- [ ] Add caching layer (Caffeine) abstraction and stub.
-- [ ] Unit tests (≥80%) for parser and extraction, with sample specs.
+- [x] Integrate OpenAPI parser (swagger-parser) and basic configuration.
+- [x] Implement schema extraction from components with $ref resolution.
+- [x] Add caching layer (Caffeine) abstraction and stub.
+- [x] Unit tests (≥80%) for parser and extraction, with sample specs.
+- [x] Configurable multi-spec loading via `cosmos.openapi.specs[*]`.
 
 ## Acceptance for Phase 1
 - [x] Project builds and tests pass locally via `mvn clean verify`.

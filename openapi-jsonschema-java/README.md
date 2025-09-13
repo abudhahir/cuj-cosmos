@@ -63,6 +63,102 @@ mvn checkstyle:check spotbugs:check pmd:check
 mvn jacoco:check
 ```
 
+### Vulnerability Coverage
+
+COSMOS includes comprehensive security vulnerability scanning through multiple integrated tools:
+
+#### OWASP Dependency Check (Always Available)
+```bash
+# Run vulnerability scan only (generates reports in docs/vulnerability-report/)
+mvn org.owasp:dependency-check-maven:check
+
+# Full build with vulnerability scanning and timestamped reports
+mvn clean verify
+
+# All quality checks including vulnerability scanning
+mvn clean verify spotbugs:check pmd:check checkstyle:check
+
+# Security scan with explicit timestamp flag
+mvn clean verify -Dvulnerability.report.timestamp=true
+```
+
+**Features:**
+- **Automatic Timestamped Reports**: `dependency-check-report_YYYYMMDD_HHMMSS.{html,json,xml,csv}`
+- **Multiple Formats**: HTML (human-readable), JSON (machine-readable), XML, CSV
+- **Build Integration**: Fails build on CVSS ≥ 7.0 vulnerabilities
+- **Suppression Support**: Configure false positives in `dependency-check-suppressions.xml`
+- **Historical Tracking**: Timestamped copies preserved for trend analysis
+
+#### SonarQube Integration (Optional - When Available)
+```bash
+# Basic SonarQube analysis (requires SonarQube server)
+mvn sonar:sonar -Dsonar.host.url=http://localhost:9000
+
+# SonarQube with authentication token
+mvn sonar:sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${SONAR_TOKEN}
+
+# Enhanced security analysis with custom profile
+mvn clean verify sonar:sonar -Psonar
+
+# Pull request analysis for CI/CD
+mvn sonar:sonar -Dsonar.pullrequest.key=${PR_NUMBER} -Dsonar.pullrequest.branch=${PR_BRANCH} -Dsonar.pullrequest.base=main
+
+# Combined OWASP + SonarQube security pipeline
+mvn clean verify sonar:sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${SONAR_TOKEN}
+```
+
+**Features:**
+- **Security Hotspots**: OWASP Top 10, CWE, SANS Top 25 detection
+- **Quality Gates**: Automated security rating enforcement
+- **Branch Analysis**: Support for feature branch and pull request analysis
+- **CI/CD Ready**: GitHub Actions, Jenkins integration examples
+- **Code-Level Analysis**: Static analysis beyond dependency vulnerabilities
+
+#### Local SonarQube Development Setup
+```bash
+# Start local SonarQube with Docker Compose
+docker-compose -f docker-compose.sonarqube.yml up -d
+
+# Access SonarQube dashboard
+open http://localhost:9000
+
+# Stop SonarQube environment
+docker-compose -f docker-compose.sonarqube.yml down
+```
+
+#### Security Reports Location
+
+- **OWASP Reports**: `docs/vulnerability-report/`
+  - Current reports: `dependency-check-report.{html,json,xml,csv}`
+  - Timestamped copies: `dependency-check-report_YYYYMMDD_HHMMSS.*`
+  - Scan summaries: `scan-summary_YYYYMMDD_HHMMSS.txt`
+
+- **SonarQube Reports**: Available in SonarQube dashboard
+  - Security hotspots and vulnerability analysis
+  - Quality gate status and metrics
+  - Historical trend analysis
+
+#### Environment Variables for CI/CD
+
+```bash
+# SonarQube Configuration
+export SONAR_HOST_URL="https://sonarqube.company.com"
+export SONAR_TOKEN="your-sonarqube-token"
+
+# Branch/PR Analysis
+export BRANCH_NAME="feature/my-branch"
+export PULL_REQUEST_KEY="123"
+export PULL_REQUEST_BRANCH="feature/my-branch"
+export PULL_REQUEST_BASE="main"
+```
+
+#### Documentation
+
+- **OWASP Integration**: `docs/vulnerability-report/README.md`
+- **SonarQube Integration**: `docs/sonarqube-integration.md`
+- **Suppression Management**: `dependency-check-suppressions.xml`
+- **SonarQube Configuration**: `sonar-project.properties`
+
 ## Features (Planned)
 
 - **OpenAPI Processing**: Parse and extract schemas from OpenAPI 3.0+ specifications
@@ -84,6 +180,19 @@ public class YourApplication {
     // JsonComparator bean auto-configured
 }
 ```
+
+### Auto-Configured Beans
+- `ValidationEngine` (default: `DefaultValidationEngine`)
+- `OpenApiParser`, `SpecCache`, `OpenApiSpecRegistry`
+- `SchemaGenerator` (VicTools-based POJO → JSON Schema)
+- `OpenApiSchemaService` (document-level generator with `$schema`, `$id`, `$defs`)
+- `SchemaValidator` (NetworkNT Draft 2020-12)
+
+### Configuration Properties
+- `cosmos.openapi.specs[n].id` / `cosmos.openapi.specs[n].location`: register OpenAPI specs
+- `cosmos.schema.uri`: override `$schema` URI (default: Draft 2020-12)
+- `cosmos.schema.id-prefix`: customize `$id` prefix (default: `urn:cosmos:schema:`)
+- `cosmos.schema.inline-refs`: `true` to inline components instead of `$ref: #/$defs/...` (default: `false`)
 
 ## Documentation
 

@@ -19,6 +19,26 @@
         <spring.boot.version>3.2.5</spring.boot.version>
         <swagger.parser.version>2.1.16</swagger.parser.version>
         <caffeine.version>3.1.8</caffeine.version>
+        <victools.version>4.36.0</victools.version>
+        <jackson.version>2.17.2</jackson.version>
+        <networknt.jsonschema.version>1.0.83</networknt.jsonschema.version>
+        <sonar.version>3.10.0.2594</sonar.version>
+
+        <!-- SonarQube Configuration -->
+        <sonar.projectKey>cleveloper-utilities-cosmos</sonar.projectKey>
+        <sonar.projectName>COSMOS - OpenAPI JSONSchema Utilities</sonar.projectName>
+        <sonar.sources>src/main/java</sonar.sources>
+        <sonar.tests>src/test/java</sonar.tests>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
+        <sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
+        <sonar.java.spotbugs.reportPaths>target/spotbugsXml.xml</sonar.java.spotbugs.reportPaths>
+        <sonar.java.pmd.reportPaths>target/pmd.xml</sonar.java.pmd.reportPaths>
+
+        <!-- Security-focused rules -->
+        <sonar.security.review.rating>1</sonar.security.review.rating>
+        <sonar.security.hotspots-reviewed>100</sonar.security.hotspots-reviewed>
     </properties>
 
     <dependencies>
@@ -82,6 +102,49 @@
             <artifactId>caffeine</artifactId>
             <version>${caffeine.version}</version>
             <optional>true</optional>
+        </dependency>
+
+        <!-- JSON Schema generation (VicTools) -->
+        <dependency>
+            <groupId>com.github.victools</groupId>
+            <artifactId>jsonschema-generator</artifactId>
+            <version>${victools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.victools</groupId>
+            <artifactId>jsonschema-module-jackson</artifactId>
+            <version>${victools.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.github.victools</groupId>
+            <artifactId>jsonschema-module-javax-validation</artifactId>
+            <version>${victools.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Jackson (schema JSON output) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- JSON Schema validation (NetworkNT) -->
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>${networknt.jsonschema.version}</version>
         </dependency>
     </dependencies>
 
@@ -210,8 +273,192 @@
                 <version>9.0.7</version>
                 <configuration>
                     <failBuildOnCVSS>7</failBuildOnCVSS>
+                    <outputDirectory>${project.basedir}/docs/vulnerability-report</outputDirectory>
+                    <format>ALL</format>
+                    <suppressionFile>${project.basedir}/dependency-check-suppressions.xml</suppressionFile>
+                    <skipTestScope>false</skipTestScope>
+                    <assemblyAnalyzerEnabled>true</assemblyAnalyzerEnabled>
+                    <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+                    <nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
+                    <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
+                    <golangDepEnabled>false</golangDepEnabled>
+                    <golangModEnabled>false</golangModEnabled>
+                    <dartAnalyzerEnabled>false</dartAnalyzerEnabled>
+                    <bundleAuditAnalyzerEnabled>false</bundleAuditAnalyzerEnabled>
+                    <pyDistributionAnalyzerEnabled>false</pyDistributionAnalyzerEnabled>
+                    <pyPackageAnalyzerEnabled>false</pyPackageAnalyzerEnabled>
+                    <rubygemsAnalyzerEnabled>false</rubygemsAnalyzerEnabled>
+                    <cocoapodsAnalyzerEnabled>false</cocoapodsAnalyzerEnabled>
+                    <carthageAnalyzerEnabled>false</carthageAnalyzerEnabled>
+                    <autoconfAnalyzerEnabled>false</autoconfAnalyzerEnabled>
+                    <cmakeAnalyzerEnabled>false</cmakeAnalyzerEnabled>
+                    <nuspecAnalyzerEnabled>false</nuspecAnalyzerEnabled>
+                    <nugetconfAnalyzerEnabled>false</nugetconfAnalyzerEnabled>
+                    <libmanAnalyzerEnabled>false</libmanAnalyzerEnabled>
+                    <msbuildProjectAnalyzerEnabled>false</msbuildProjectAnalyzerEnabled>
+                    <composerAnalyzerEnabled>false</composerAnalyzerEnabled>
+                    <cpanAnalyzerEnabled>false</cpanAnalyzerEnabled>
+                    <mixAuditAnalyzerEnabled>false</mixAuditAnalyzerEnabled>
+                    <swiftPackageManagerAnalyzerEnabled>false</swiftPackageManagerAnalyzerEnabled>
+                    <swiftPackageResolvedAnalyzerEnabled>false</swiftPackageResolvedAnalyzerEnabled>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>vulnerability-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Exec plugin for post-processing vulnerability reports -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>timestamp-vulnerability-reports</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>
+                                    # Create timestamped copies of vulnerability reports
+                                    TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+                                    REPORT_DIR="${project.basedir}/docs/vulnerability-report"
+
+                                    if [ -f "$REPORT_DIR/dependency-check-report.html" ]; then
+                                        cp "$REPORT_DIR/dependency-check-report.html" "$REPORT_DIR/dependency-check-report_$TIMESTAMP.html"
+                                        echo "Created timestamped HTML report: dependency-check-report_$TIMESTAMP.html"
+                                    fi
+
+                                    if [ -f "$REPORT_DIR/dependency-check-report.json" ]; then
+                                        cp "$REPORT_DIR/dependency-check-report.json" "$REPORT_DIR/dependency-check-report_$TIMESTAMP.json"
+                                        echo "Created timestamped JSON report: dependency-check-report_$TIMESTAMP.json"
+                                    fi
+
+                                    if [ -f "$REPORT_DIR/dependency-check-report.xml" ]; then
+                                        cp "$REPORT_DIR/dependency-check-report.xml" "$REPORT_DIR/dependency-check-report_$TIMESTAMP.xml"
+                                        echo "Created timestamped XML report: dependency-check-report_$TIMESTAMP.xml"
+                                    fi
+
+                                    if [ -f "$REPORT_DIR/dependency-check-report.csv" ]; then
+                                        cp "$REPORT_DIR/dependency-check-report.csv" "$REPORT_DIR/dependency-check-report_$TIMESTAMP.csv"
+                                        echo "Created timestamped CSV report: dependency-check-report_$TIMESTAMP.csv"
+                                    fi
+
+                                    # Create a summary file with scan timestamp
+                                    echo "Vulnerability Scan Summary" > "$REPORT_DIR/scan-summary_$TIMESTAMP.txt"
+                                    echo "=========================" >> "$REPORT_DIR/scan-summary_$TIMESTAMP.txt"
+                                    echo "Scan Date: $(date)" >> "$REPORT_DIR/scan-summary_$TIMESTAMP.txt"
+                                    echo "Project: ${project.name}" >> "$REPORT_DIR/scan-summary_$TIMESTAMP.txt"
+                                    echo "Version: ${project.version}" >> "$REPORT_DIR/scan-summary_$TIMESTAMP.txt"
+                                    echo "Reports Generated:" >> "$REPORT_DIR/scan-summary_$TIMESTAMP.txt"
+                                    ls -la "$REPORT_DIR" | grep "$TIMESTAMP" >> "$REPORT_DIR/scan-summary_$TIMESTAMP.txt"
+                                </argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- SonarQube Scanner -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>${sonar.version}</version>
             </plugin>
         </plugins>
     </build>
+
+    <!-- Optional SonarQube Profile for Enhanced Security Scanning -->
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <activation>
+                <property>
+                    <name>sonar.host.url</name>
+                </property>
+            </activation>
+            <properties>
+                <!-- Additional security-focused SonarQube properties -->
+                <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+                <sonar.branch.name>${env.BRANCH_NAME}</sonar.branch.name>
+                <sonar.pullrequest.key>${env.PULL_REQUEST_KEY}</sonar.pullrequest.key>
+                <sonar.pullrequest.branch>${env.PULL_REQUEST_BRANCH}</sonar.pullrequest.branch>
+                <sonar.pullrequest.base>${env.PULL_REQUEST_BASE}</sonar.pullrequest.base>
+
+                <!-- Security rules configuration -->
+                <sonar.java.security.rules>true</sonar.java.security.rules>
+                <sonar.security.review.enabled>true</sonar.security.review.enabled>
+                <sonar.exclusions>**/test/**/*Test.java</sonar.exclusions>
+                <sonar.test.exclusions>**/test/**/*</sonar.test.exclusions>
+            </properties>
+            <build>
+                <plugins>
+                    <!-- Generate XML reports for SonarQube integration -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>checkstyle-report</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>checkstyle</goal>
+                                </goals>
+                                <configuration>
+                                    <outputFile>target/checkstyle-result.xml</outputFile>
+                                    <outputFileFormat>xml</outputFileFormat>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>spotbugs-report</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>spotbugs</goal>
+                                </goals>
+                                <configuration>
+                                    <xmlOutput>true</xmlOutput>
+                                    <outputFile>target/spotbugsXml.xml</outputFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>pmd-report</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>pmd</goal>
+                                </goals>
+                                <configuration>
+                                    <outputFile>target/pmd.xml</outputFile>
+                                    <format>xml</format>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
