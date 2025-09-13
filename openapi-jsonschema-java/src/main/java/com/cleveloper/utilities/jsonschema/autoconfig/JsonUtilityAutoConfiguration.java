@@ -67,7 +67,11 @@ public class JsonUtilityAutoConfiguration {
       OpenApiSpecRegistry registry, OpenApiSchemaProperties schemaProps) {
     String uri = schemaProps != null ? schemaProps.getUri() : null;
     String idPrefix = schemaProps != null ? schemaProps.getIdPrefix() : null;
-    return new DefaultOpenApiSchemaService(registry, null, null, uri, idPrefix);
+    boolean inlineRefs = schemaProps != null && schemaProps.isInlineRefs();
+    var converter =
+        new com.cleveloper.utilities.jsonschema.openapi.convert.OpenApiToJsonSchemaConverter(
+            !inlineRefs);
+    return new DefaultOpenApiSchemaService(registry, converter, null, uri, idPrefix);
   }
 
   @Bean

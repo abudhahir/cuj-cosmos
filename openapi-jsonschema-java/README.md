@@ -181,6 +181,19 @@ public class YourApplication {
 }
 ```
 
+### Auto-Configured Beans
+- `ValidationEngine` (default: `DefaultValidationEngine`)
+- `OpenApiParser`, `SpecCache`, `OpenApiSpecRegistry`
+- `SchemaGenerator` (VicTools-based POJO → JSON Schema)
+- `OpenApiSchemaService` (document-level generator with `$schema`, `$id`, `$defs`)
+- `SchemaValidator` (NetworkNT Draft 2020-12)
+
+### Configuration Properties
+- `cosmos.openapi.specs[n].id` / `cosmos.openapi.specs[n].location`: register OpenAPI specs
+- `cosmos.schema.uri`: override `$schema` URI (default: Draft 2020-12)
+- `cosmos.schema.id-prefix`: customize `$id` prefix (default: `urn:cosmos:schema:`)
+- `cosmos.schema.inline-refs`: `true` to inline components instead of `$ref: #/$defs/...` (default: `false`)
+
 ## Documentation
 
 Comprehensive documentation available in the `docs/` directory:
