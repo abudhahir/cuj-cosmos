@@ -66,11 +66,11 @@ Week 2:
 - Establish caching infrastructure
 
 **Deliverables**:
-- [ ] OpenAPI 3.0+ specification parser using swagger-parser
-- [ ] Schema extraction from OpenAPI components
-- [ ] Reference resolution ($ref handling)
-- [ ] Basic caching infrastructure with Caffeine
-- [ ] Comprehensive unit tests (80%+ coverage)
+- [x] OpenAPI 3.0+ specification parser using swagger-parser
+- [x] Schema extraction from OpenAPI components
+- [x] Reference resolution ($ref handling)
+- [x] Basic caching infrastructure with Caffeine
+- [x] Comprehensive unit tests (80%+ coverage)
 
 **Tasks**:
 ```
@@ -90,6 +90,9 @@ Week 4:
 **Dependencies**: Sprint 1 completion
 **Risks**: Low - Well-established libraries
 **Mitigation**: Extensive testing with various OpenAPI specification formats
+
+#### Additional Outcome (Sprint 2)
+- [x] Configurable multi-spec loading via Spring Boot properties: `cosmos.openapi.specs[*]`
 
 ### Phase 2: JSON Schema Generation and Validation (Weeks 5-8)
 
