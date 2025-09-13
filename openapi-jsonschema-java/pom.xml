@@ -21,6 +21,7 @@
         <caffeine.version>3.1.8</caffeine.version>
         <victools.version>4.36.0</victools.version>
         <jackson.version>2.17.2</jackson.version>
+        <networknt.jsonschema.version>1.0.83</networknt.jsonschema.version>
         <sonar.version>3.10.0.2594</sonar.version>
 
         <!-- SonarQube Configuration -->
@@ -137,6 +138,13 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- JSON Schema validation (NetworkNT) -->
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>${networknt.jsonschema.version}</version>
         </dependency>
     </dependencies>
 

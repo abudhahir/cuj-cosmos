@@ -12,6 +12,8 @@ import com.cleveloper.utilities.jsonschema.openapi.DefaultOpenApiSchemaService;
 import com.cleveloper.utilities.jsonschema.openapi.OpenApiParser;
 import com.cleveloper.utilities.jsonschema.openapi.OpenApiSchemaService;
 import com.cleveloper.utilities.jsonschema.openapi.OpenApiSpecRegistry;
+import com.cleveloper.utilities.jsonschema.validation.NetworkntSchemaValidator;
+import com.cleveloper.utilities.jsonschema.validation.SchemaValidator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -66,5 +68,11 @@ public class JsonUtilityAutoConfiguration {
     String uri = schemaProps != null ? schemaProps.getUri() : null;
     String idPrefix = schemaProps != null ? schemaProps.getIdPrefix() : null;
     return new DefaultOpenApiSchemaService(registry, null, null, uri, idPrefix);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(SchemaValidator.class)
+  public SchemaValidator schemaValidator() {
+    return new NetworkntSchemaValidator();
   }
 }
