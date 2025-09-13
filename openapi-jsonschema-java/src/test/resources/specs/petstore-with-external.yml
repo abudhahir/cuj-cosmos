@@ -1,0 +1,16 @@
+openapi: 3.0.3
+info:
+  title: Petstore External
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    Pet:
+      allOf:
+        - $ref: './common.yml#/components/schemas/Common'
+        - type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string

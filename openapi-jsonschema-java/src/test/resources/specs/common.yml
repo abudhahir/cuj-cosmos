@@ -1,0 +1,12 @@
+openapi: 3.0.3
+info:
+  title: Common
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    Common:
+      type: object
+      properties:
+        code:
+          type: string

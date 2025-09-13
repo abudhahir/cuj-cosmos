@@ -17,6 +17,8 @@
         <assertj.version>3.25.3</assertj.version>
         <checkstyle.version>10.14.2</checkstyle.version>
         <spring.boot.version>3.2.5</spring.boot.version>
+        <swagger.parser.version>2.1.16</swagger.parser.version>
+        <caffeine.version>3.1.8</caffeine.version>
     </properties>
 
     <dependencies>
@@ -65,6 +67,21 @@
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- OpenAPI parsing -->
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>${swagger.parser.version}</version>
+        </dependency>
+
+        <!-- Optional caching implementation -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${caffeine.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
