@@ -23,7 +23,7 @@ This document tracks the current tasks and status for COSMOS (Comprehensive Open
 - [ ] Performance testing
 - [ ] Security implementation
 
-### Upcoming – Sprint 3 (Schema Generation & Validation)
+### Sprint 3 Backlog (Schema Generation & Validation)
 - [ ] Integrate VicTools jsonschema-generator with custom modules
 - [ ] OpenAPI → Draft 2020-12 converter (allOf/oneOf/anyOf, nullable, enums)
 - [ ] Draft 2020-12 features: $defs, conditional schemas, formats

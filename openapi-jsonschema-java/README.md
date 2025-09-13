@@ -20,18 +20,27 @@ A comprehensive Java utility library for OpenAPI and JSON Schema processing, des
   - Code formatting: Google Java Style with fmt-maven-plugin
   - Security scanning: OWASP dependency check integrated
 
-### Phase 1 - Sprint 2 🚧 In Progress (Weeks 3-4)
+### Phase 1 - Sprint 2 ✅ Complete (Weeks 3-4)
 **OpenAPI Processing Foundation**
 
-#### Current Progress:
+#### Completed Deliverables:
 - ✅ OpenAPI 3.0+ parser integration (Swagger Parser 2.1.33)
 - ✅ Schema extraction from OpenAPI components
-- ✅ Basic $ref dereferencing support
-- ✅ Cache interface definition (Caffeine integration started)
-- ✅ Unit tests with sample OpenAPI specifications
-- 🚧 External $ref resolution (in progress)
-- 🚧 Comprehensive caching implementation
-- 🚧 Performance optimization for large specifications
+- ✅ $ref dereferencing support for component schemas
+- ✅ Caching abstraction with Caffeine stub implementation
+- ✅ Config-driven multi-spec loading via `cosmos.openapi.specs[*]`
+- ✅ Unit tests with sample OpenAPI specifications (including external refs)
+- ✅ Configuration property: `cosmos.schema.inline-refs` to control inlining vs `$ref`
+
+### Phase 2 - Sprint 3 🚧 In Progress (Weeks 5-6)
+**JSON Schema Generation**
+
+#### Goals:
+- OpenAPI schema → JSON Schema Draft 2020-12 converter
+- Java POJO → JSON Schema generation (VicTools)
+- Support combinators and advanced features (allOf/oneOf/anyOf, nullable, $defs)
+- Validation pipeline wiring (NetworkNT) with detailed error reporting
+- Golden-schema tests and performance smoke tests
 
 ## Quick Start
 
@@ -205,8 +214,8 @@ Comprehensive documentation available in the `docs/` directory:
 
 ## Roadmap
 
-- **Phase 1** (Weeks 1-4): Foundation and Core Infrastructure ✅ Sprint 1 | 🚧 Sprint 2
-- **Phase 2** (Weeks 5-8): JSON Schema Generation and Validation
+- **Phase 1** (Weeks 1-4): Foundation and Core Infrastructure ✅ Sprint 1 | ✅ Sprint 2
+- **Phase 2** (Weeks 5-8): JSON Schema Generation and Validation 🚧 Sprint 3
 - **Phase 3** (Weeks 9-12): Test Data Generation and Comparison
 - **Phase 4** (Weeks 13-16): Advanced Features and Integration
 
