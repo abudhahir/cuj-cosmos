@@ -206,6 +206,12 @@ Develop COSMOS (Comprehensive OpenAPI Schema Management Operations Suite), a com
 #### 2.7.1 Fluent API Design
 **Requirement**: Provide intuitive fluent API for defining custom validations
 - **Input**: Validation requirements expressed in fluent syntax
+
+### FR-OPENAPI-LOAD-001: Configurable OpenAPI Spec Loading
+- The library must support loading one or more OpenAPI specifications at application startup based on configuration in `application.properties` or `application.yml`.
+- Configuration format: `cosmos.openapi.specs[n].id` and `cosmos.openapi.specs[n].location`.
+- `location` may be `classpath:` resources, filesystem paths, or `http(s)`/`file` URLs. Relative `$ref` entries must be resolved where possible.
+- Loaded specifications must be accessible programmatically via a registry by `id` and cached in-memory.
 - **Output**: Compiled validation rules ready for execution
 - **Constraints**: Type-safe API with IDE auto-completion support
 
