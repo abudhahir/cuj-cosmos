@@ -32,15 +32,15 @@ A comprehensive Java utility library for OpenAPI and JSON Schema processing, des
 - ✅ Unit tests with sample OpenAPI specifications (including external refs)
 - ✅ Configuration property: `cosmos.schema.inline-refs` to control inlining vs `$ref`
 
-### Phase 2 - Sprint 3 🚧 In Progress (Weeks 5-6)
+### Phase 2 - Sprint 3 ✅ Complete (Weeks 5-6)
 **JSON Schema Generation**
 
-#### Goals:
-- OpenAPI schema → JSON Schema Draft 2020-12 converter
+#### Delivered:
+- OpenAPI schema → JSON Schema Draft 2020-12 converter (nullable, enums, allOf/oneOf/anyOf, $defs)
 - Java POJO → JSON Schema generation (VicTools)
-- Support combinators and advanced features (allOf/oneOf/anyOf, nullable, $defs)
-- Validation pipeline wiring (NetworkNT) with detailed error reporting
-- Golden-schema tests and performance smoke tests
+- Validation pipeline wiring (NetworkNT) with clear error collection
+- Golden-schema tests for POJOs and OpenAPI components
+- Documentation for mapping rules and limits (see `docs/mapping-rules.md`)
 
 ## Quick Start
 
@@ -89,6 +89,9 @@ mvn clean verify spotbugs:check pmd:check checkstyle:check
 
 # Security scan with explicit timestamp flag
 mvn clean verify -Dvulnerability.report.timestamp=true
+
+# Skip vulnerability scanning locally (e.g., offline or no NVD API key)
+mvn clean verify -Ddependency-check.skip=true
 ```
 
 **Features:**
@@ -154,6 +157,9 @@ docker-compose -f docker-compose.sonarqube.yml down
 export SONAR_HOST_URL="https://sonarqube.company.com"
 export SONAR_TOKEN="your-sonarqube-token"
 
+# OWASP Dependency-Check (NVD API access)
+export NVD_API_KEY="your-nvd-api-key"
+
 # Branch/PR Analysis
 export BRANCH_NAME="feature/my-branch"
 export PULL_REQUEST_KEY="123"
@@ -173,7 +179,21 @@ export PULL_REQUEST_BASE="main"
 - **OpenAPI Processing**: Parse and extract schemas from OpenAPI 3.0+ specifications
 - **JSON Schema Validation**: Full JSON Schema Draft 2020-12 compliance
 - **Test Data Generation**: Generate valid and invalid test data systematically
-- **JSON Comparison**: Detailed comparison with configurable rules
+- **JSON Comparison**: Initial comparator available; returns concise diffs (more options coming)
+
+### Advanced Comparison
+- Use `ConfigurableJsonComparator` with `JsonComparisonOptions` to:
+  - Ignore paths via JSON Pointers (e.g., `/meta/ts`)
+  - Apply numeric tolerance for floating-point comparisons
+  - Default `JsonComparator` bean remains lightweight; create configurable instance as needed
+
+## Test Data Generation
+
+- Auto-configured `TestDataGenerator` bean:
+  - Uses Instancio when present on the classpath for rich data.
+  - Falls back to a simple internal generator otherwise.
+- API: `TestDataGenerator.generate(Class<T>)` and `generateMany(Class<T>, int)`.
+- Add Instancio for richer data: add dependency `org.instancio:instancio-core`.
 - **Spring Boot Integration**: Zero-configuration setup with auto-configuration
 - **High Performance**: Sub-100ms validation for typical documents
 

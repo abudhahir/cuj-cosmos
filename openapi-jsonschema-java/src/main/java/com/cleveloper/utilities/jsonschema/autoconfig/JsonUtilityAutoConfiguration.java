@@ -3,11 +3,16 @@ package com.cleveloper.utilities.jsonschema.autoconfig;
 import com.cleveloper.utilities.jsonschema.DefaultValidationEngine;
 import com.cleveloper.utilities.jsonschema.SchemaGenerator;
 import com.cleveloper.utilities.jsonschema.ValidationEngine;
+import com.cleveloper.utilities.jsonschema.JsonComparator;
+import com.cleveloper.utilities.jsonschema.comparison.DefaultJsonComparator;
 import com.cleveloper.utilities.jsonschema.cache.CaffeineSpecCache;
 import com.cleveloper.utilities.jsonschema.cache.SpecCache;
 import com.cleveloper.utilities.jsonschema.config.OpenApiSchemaProperties;
 import com.cleveloper.utilities.jsonschema.config.OpenApiSpecsProperties;
 import com.cleveloper.utilities.jsonschema.generation.VicToolsSchemaGenerator;
+import com.cleveloper.utilities.jsonschema.generation.data.InstancioTestDataGenerator;
+import com.cleveloper.utilities.jsonschema.generation.data.SimpleTestDataGenerator;
+import com.cleveloper.utilities.jsonschema.generation.data.TestDataGenerator;
 import com.cleveloper.utilities.jsonschema.openapi.DefaultOpenApiSchemaService;
 import com.cleveloper.utilities.jsonschema.openapi.OpenApiParser;
 import com.cleveloper.utilities.jsonschema.openapi.OpenApiSchemaService;
@@ -78,5 +83,22 @@ public class JsonUtilityAutoConfiguration {
   @ConditionalOnMissingBean(SchemaValidator.class)
   public SchemaValidator schemaValidator() {
     return new NetworkntSchemaValidator();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(JsonComparator.class)
+  public JsonComparator jsonComparator() {
+    return new DefaultJsonComparator();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(TestDataGenerator.class)
+  public TestDataGenerator testDataGenerator() {
+    try {
+      Class.forName("org.instancio.Instancio");
+      return new InstancioTestDataGenerator();
+    } catch (Throwable ignored) {
+      return new SimpleTestDataGenerator();
+    }
   }
 }

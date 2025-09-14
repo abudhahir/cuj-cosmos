@@ -9,6 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # If set in repo secrets, enables OWASP Dependency-Check to use the NVD API.
+      # When absent, the build will skip the dependency check to avoid NVD 403s.
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -24,7 +28,15 @@ jobs:
 
       - name: Build and test
         working-directory: openapi-jsonschema-java
-        run: mvn -B clean verify
+        shell: bash
+        run: |
+          if [[ -n "$NVD_API_KEY" ]]; then
+            echo "NVD_API_KEY present: running full verify with OWASP Dependency-Check"
+            mvn -B clean verify -Dnvd.api.key="$NVD_API_KEY"
+          else
+            echo "NVD_API_KEY not set: skipping OWASP Dependency-Check"
+            mvn -B -Ddependency-check.skip=true clean verify
+          fi
 
       - name: Static analysis
         working-directory: openapi-jsonschema-java
@@ -33,4 +45,3 @@ jobs:
       - name: Coverage gate
         working-directory: openapi-jsonschema-java
         run: mvn -B jacoco:check
-
