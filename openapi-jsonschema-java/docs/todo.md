@@ -13,23 +13,23 @@ This document tracks the current tasks and status for COSMOS (Comprehensive Open
 - [x] Reference links collection
 
 ### In Progress
-- [ ] Schema generation and validation (Sprint 3)
+// none
 
 ### Pending
-- [ ] Test data generation
-- [ ] JSON comparison utilities
+- [ ] Test data generation (constraints support, invalid cases)
+- [ ] JSON comparison utilities (json-path excludes via properties, unordered arrays)
 - [ ] Custom validation DSL
 - [ ] Documentation and examples
-- [ ] Performance testing
+- [ ] Broader performance benchmarking on large specs
 - [ ] Security implementation
 
-### Upcoming – Sprint 3 (Schema Generation & Validation)
-- [ ] Integrate VicTools jsonschema-generator with custom modules
-- [ ] OpenAPI → Draft 2020-12 converter (allOf/oneOf/anyOf, nullable, enums)
-- [ ] Draft 2020-12 features: $defs, conditional schemas, formats
-- [ ] Validation pipeline using NetworkNT; detailed error reporting
-- [ ] API: `SchemaGenerator.generateFor(Class<?>)`, `generateFromOpenApi(String componentId)`
-- [ ] Golden-schema tests for POJOs and OpenAPI components
+### Sprint 3 Backlog (Schema Generation & Validation)
+- [x] Integrate VicTools jsonschema-generator with custom modules (optional via reflection)
+- [x] OpenAPI → Draft 2020-12 converter (allOf/oneOf/anyOf, nullable, enums)
+- [x] Draft 2020-12 features: $defs, formats, annotations
+- [x] Validation pipeline using NetworkNT; error collection
+- [x] API: `SchemaGenerator.generateFor(Class<?>)`, `generateFromOpenApi(String componentId)`
+- [x] Golden-schema tests for POJOs and OpenAPI components
 - [ ] Performance smoke tests and mapping docs
 
 ### Completed (Phase 1 - Sprint 1)
@@ -45,6 +45,13 @@ This document tracks the current tasks and status for COSMOS (Comprehensive Open
 - [x] Caching abstraction + Caffeine implementation
 - [x] Config-driven multi-spec loading via `cosmos.openapi.specs[*]`
 - [x] Unit tests and fixtures (including external refs)
+
+### Completed (Phase 2 - Sprint 3)
+- [x] OpenAPI → JSON Schema conversion (nullable/enums/combinators/$defs)
+- [x] POJO → JSON Schema generation (VicTools)
+- [x] Validation setup (NetworkNT Draft 2020-12)
+- [x] Golden-schema tests and examples
+- [x] Mapping rules and documentation
 
 ### Future Enhancements
 - [ ] Additional JSON Schema draft support

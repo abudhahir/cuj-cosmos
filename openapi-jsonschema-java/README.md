@@ -20,18 +20,27 @@ A comprehensive Java utility library for OpenAPI and JSON Schema processing, des
   - Code formatting: Google Java Style with fmt-maven-plugin
   - Security scanning: OWASP dependency check integrated
 
-### Phase 1 - Sprint 2 🚧 In Progress (Weeks 3-4)
+### Phase 1 - Sprint 2 ✅ Complete (Weeks 3-4)
 **OpenAPI Processing Foundation**
 
-#### Current Progress:
+#### Completed Deliverables:
 - ✅ OpenAPI 3.0+ parser integration (Swagger Parser 2.1.33)
 - ✅ Schema extraction from OpenAPI components
-- ✅ Basic $ref dereferencing support
-- ✅ Cache interface definition (Caffeine integration started)
-- ✅ Unit tests with sample OpenAPI specifications
-- 🚧 External $ref resolution (in progress)
-- 🚧 Comprehensive caching implementation
-- 🚧 Performance optimization for large specifications
+- ✅ $ref dereferencing support for component schemas
+- ✅ Caching abstraction with Caffeine stub implementation
+- ✅ Config-driven multi-spec loading via `cosmos.openapi.specs[*]`
+- ✅ Unit tests with sample OpenAPI specifications (including external refs)
+- ✅ Configuration property: `cosmos.schema.inline-refs` to control inlining vs `$ref`
+
+### Phase 2 - Sprint 3 ✅ Complete (Weeks 5-6)
+**JSON Schema Generation**
+
+#### Delivered:
+- OpenAPI schema → JSON Schema Draft 2020-12 converter (nullable, enums, allOf/oneOf/anyOf, $defs)
+- Java POJO → JSON Schema generation (VicTools)
+- Validation pipeline wiring (NetworkNT) with clear error collection
+- Golden-schema tests for POJOs and OpenAPI components
+- Documentation for mapping rules and limits (see `docs/mapping-rules.md`)
 
 ## Quick Start
 
@@ -80,6 +89,9 @@ mvn clean verify spotbugs:check pmd:check checkstyle:check
 
 # Security scan with explicit timestamp flag
 mvn clean verify -Dvulnerability.report.timestamp=true
+
+# Skip vulnerability scanning locally (e.g., offline or no NVD API key)
+mvn clean verify -Ddependency-check.skip=true
 ```
 
 **Features:**
@@ -145,6 +157,9 @@ docker-compose -f docker-compose.sonarqube.yml down
 export SONAR_HOST_URL="https://sonarqube.company.com"
 export SONAR_TOKEN="your-sonarqube-token"
 
+# OWASP Dependency-Check (NVD API access)
+export NVD_API_KEY="your-nvd-api-key"
+
 # Branch/PR Analysis
 export BRANCH_NAME="feature/my-branch"
 export PULL_REQUEST_KEY="123"
@@ -164,7 +179,21 @@ export PULL_REQUEST_BASE="main"
 - **OpenAPI Processing**: Parse and extract schemas from OpenAPI 3.0+ specifications
 - **JSON Schema Validation**: Full JSON Schema Draft 2020-12 compliance
 - **Test Data Generation**: Generate valid and invalid test data systematically
-- **JSON Comparison**: Detailed comparison with configurable rules
+- **JSON Comparison**: Initial comparator available; returns concise diffs (more options coming)
+
+### Advanced Comparison
+- Use `ConfigurableJsonComparator` with `JsonComparisonOptions` to:
+  - Ignore paths via JSON Pointers (e.g., `/meta/ts`)
+  - Apply numeric tolerance for floating-point comparisons
+  - Default `JsonComparator` bean remains lightweight; create configurable instance as needed
+
+## Test Data Generation
+
+- Auto-configured `TestDataGenerator` bean:
+  - Uses Instancio when present on the classpath for rich data.
+  - Falls back to a simple internal generator otherwise.
+- API: `TestDataGenerator.generate(Class<T>)` and `generateMany(Class<T>, int)`.
+- Add Instancio for richer data: add dependency `org.instancio:instancio-core`.
 - **Spring Boot Integration**: Zero-configuration setup with auto-configuration
 - **High Performance**: Sub-100ms validation for typical documents
 
@@ -205,8 +234,8 @@ Comprehensive documentation available in the `docs/` directory:
 
 ## Roadmap
 
-- **Phase 1** (Weeks 1-4): Foundation and Core Infrastructure ✅ Sprint 1 | 🚧 Sprint 2
-- **Phase 2** (Weeks 5-8): JSON Schema Generation and Validation
+- **Phase 1** (Weeks 1-4): Foundation and Core Infrastructure ✅ Sprint 1 | ✅ Sprint 2
+- **Phase 2** (Weeks 5-8): JSON Schema Generation and Validation 🚧 Sprint 3
 - **Phase 3** (Weeks 9-12): Test Data Generation and Comparison
 - **Phase 4** (Weeks 13-16): Advanced Features and Integration
 

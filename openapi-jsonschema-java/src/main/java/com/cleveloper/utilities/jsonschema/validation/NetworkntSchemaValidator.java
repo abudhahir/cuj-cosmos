@@ -26,9 +26,8 @@ public class NetworkntSchemaValidator implements SchemaValidator {
       Set<ValidationMessage> messages = schema.validate(instanceNode);
       List<String> errors = new ArrayList<>();
       for (ValidationMessage vm : messages) {
-        String path = vm.getPath();
         String msg = vm.getMessage();
-        errors.add(path + ": " + msg);
+        errors.add(msg);
       }
       return errors;
     } catch (Exception e) {
