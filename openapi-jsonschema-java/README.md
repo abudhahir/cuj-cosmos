@@ -42,6 +42,17 @@ A comprehensive Java utility library for OpenAPI and JSON Schema processing, des
 - Golden-schema tests for POJOs and OpenAPI components
 - Documentation for mapping rules and limits (see `docs/mapping-rules.md`)
 
+### Phase 2 - Sprint 4 🚧 In Progress (Weeks 7-8)
+**Hardening, Coverage, and Performance**
+
+#### Goals:
+- Raise code coverage to ≥80% (enforce JaCoCo gate)
+- Add integration tests for complex OpenAPI/JSON Schema scenarios
+- Establish performance benchmarks and profiling for large specs
+- Introduce caching for repeated conversions (pluggable provider)
+
+See `docs/sprint-4-plan.md` and `docs/todo.md` for tracking.
+
 ## Quick Start
 
 ### Prerequisites

@@ -13,14 +13,11 @@ This document tracks the current tasks and status for COSMOS (Comprehensive Open
 - [x] Reference links collection
 
 ### In Progress
-// none
+- [ ] Phase 2 - Sprint 4 (Hardening, Coverage, Performance)
 
 ### Pending
-- [ ] Test data generation (constraints support, invalid cases)
-- [ ] JSON comparison utilities (json-path excludes via properties, unordered arrays)
 - [ ] Custom validation DSL
 - [ ] Documentation and examples
-- [ ] Broader performance benchmarking on large specs
 - [ ] Security implementation
 
 ### Sprint 3 Backlog (Schema Generation & Validation)
@@ -30,7 +27,7 @@ This document tracks the current tasks and status for COSMOS (Comprehensive Open
 - [x] Validation pipeline using NetworkNT; error collection
 - [x] API: `SchemaGenerator.generateFor(Class<?>)`, `generateFromOpenApi(String componentId)`
 - [x] Golden-schema tests for POJOs and OpenAPI components
-- [ ] Performance smoke tests and mapping docs
+- [x] Performance smoke tests and mapping docs
 
 ### Completed (Phase 1 - Sprint 1)
 - [x] Project structure setup (Maven module, Java 17)
@@ -53,6 +50,14 @@ This document tracks the current tasks and status for COSMOS (Comprehensive Open
 - [x] Golden-schema tests and examples
 - [x] Mapping rules and documentation
 
+### Sprint 4 Backlog (Hardening, Coverage, Performance)
+- [ ] Raise code coverage to ≥80% (targeted tests on error/edge paths)
+- [ ] Integration tests for complex OpenAPI schemas (nested refs, combinators)
+- [ ] Performance benchmarks on large specs; document baseline and goals
+- [ ] Introduce caching for repeated conversions (pluggable provider)
+- [ ] Enhance test data generation (constraints support, invalid cases)
+- [ ] JSON comparison enhancements (json-path excludes via properties, unordered arrays)
+
 ### Future Enhancements
 - [ ] Additional JSON Schema draft support
 - [ ] Advanced caching strategies
@@ -62,4 +67,4 @@ This document tracks the current tasks and status for COSMOS (Comprehensive Open
 
 ---
 
-*Last updated: 2025-09-13*
+*Last updated: 2025-09-15*
